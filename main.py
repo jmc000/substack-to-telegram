@@ -24,7 +24,7 @@ def save_last_post(post_id):
         f.write(post_id)
 
 def send_to_telegram(title, link, summary, image_url=None):
-    message = f"📝 <b>{title}</b>\n\n{summary}\n\n<a href=\"{link}\">Read more</a>"
+    message = f"📜 <b>Nouvelle publication Substack</b>\n\n┌────────────\n<b>{title}</b>\n<i>{summary}</i>\n└───────────────\n\n➤ <a href=\"{link}\">Lien</a>\n"
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {
         "chat_id": CHAT_ID,
@@ -38,19 +38,6 @@ def send_to_telegram(title, link, summary, image_url=None):
     else:
         print("Message sent.")
 
-    # Optional: send image if available
-    if image_url:
-        photo_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
-        photo_payload = {
-            "chat_id": CHAT_ID,
-            "photo": image_url,
-            "caption": title
-        }
-        photo_resp = requests.post(photo_url, data=photo_payload)
-        if not photo_resp.ok:
-            print("Failed to send photo:", photo_resp.text)
-        else:
-            print("Photo sent.")
 
 def main():
     feed = feedparser.parse(FEED_URL)

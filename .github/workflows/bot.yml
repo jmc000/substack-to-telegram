@@ -1,13 +1,11 @@
 name: Substack to Telegram Bot
 
-env:
-  BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-  CHAT_ID: ${{ secrets.CHAT_ID }}
-  FEED_URL: ${{ secrets.FEED_URL }}
+permissions:
+  contents: write
 
 on:
   schedule:
-    - cron: '*/3 * * * *'  # every 3 minutes
+    - cron: '*/10 * * * *'  # every 10 minutes
   workflow_dispatch:        # allow manual runs
 
 jobs:
@@ -34,6 +32,7 @@ jobs:
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
+          FEED_URL: ${{ secrets.FEED_URL }}
         run: python3 main.py
 
       - name: Commit updated last_post.txt
