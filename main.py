@@ -1,10 +1,7 @@
-from dotenv import load_dotenv
 import feedparser
 import requests
 import os
-import certifi
-
-os.environ['SSL_CERT_FILE'] = certifi.where()
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -38,9 +35,20 @@ def send_to_telegram(title, link, summary, image_url=None):
     else:
         print("Message sent.")
 
-
 def main():
-    feed = feedparser.parse(FEED_URL)
+    print("-> 1")
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+    }
+    print("-> 2")
+    response = requests.get(FEED_URL, headers=headers)
+    if response.status_code != 200:
+        print(f"Failed to fetch feed: HTTP {response.status_code}")
+        return
+
+    print("-> 3")
+    feed = feedparser.parse(response.content)
+    print("-> 4")
 
     if feed.bozo:
         print("Failed to parse feed:", feed.bozo_exception)
@@ -56,12 +64,8 @@ def main():
 
     if latest_id != last_sent:
         print("New post found, sending to Telegram.")
-
-        # Try to get summary or description text
         summary = latest.get("summary") or latest.get("description") or ""
         summary = summary[:500]
-
-        # Try to get the image URL from media_content or enclosure
         image_url = None
         if "media_content" in latest and latest.media_content:
             image_url = latest.media_content[0].get("url")
